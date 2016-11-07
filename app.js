@@ -89,7 +89,7 @@ let totalStats = (addr, excrate, done) => {
 	});
 };
 
-var addr = "1J6GWiBvj6CdDSQoQETymDkJonZcrFGJrh";
+var addr = process.env.addr || "1J6GWiBvj6CdDSQoQETymDkJonZcrFGJrh";
 var excrate = 0.0014;
 var equihash_algo=24;
 
