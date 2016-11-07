@@ -2,6 +2,7 @@
 
 let request = require('request');
 let durations = require('humanize-duration');
+let rate = require("./rate");
 
 let add = (w) => {
 	let acc = 0;
@@ -19,8 +20,8 @@ let computeTime = (w) => {
 	return w[2];
 }
 
-let workerStats = (addr, done) => {
-	request.get({url: "https://www.nicehash.com/api?method=stats.provider.workers&addr="+addr+"&algo=24", json:true }, (err,res,body)=> {
+let workerStats = (addr, algo, done) => {
+	request.get({url: "https://www.nicehash.com/api?method=stats.provider.workers&addr="+addr+"&algo="+algo, json:true }, (err,res,body)=> {
 			if(!err && body && body.result && body.result.workers &&  body.result.workers.length) 
 			{
 			console.log(body.result.workers.length + " workers enrolled.");
@@ -52,21 +53,48 @@ let workerStats = (addr, done) => {
 
 let totalStats = (addr, excrate, done) => {
 
-	request.get({ uri: "https://www.nicehash.com/api?method=stats.provider.ex&addr="+addr+"", json: true }, (err,res,body)=> {
-			if(!err && body && body.result && body.result.current && body.result.current.length) {
-			let usd = (Number(body.result.current[0].data[1])/excrate).toFixed(2);
-			console.log(body.result.current[0].data[1] + " BTC balance\t"+ usd+" USD");
-			console.log(body.result.current[0].profitability + " BTC/day\n");
+	rate(addr, (err, rates) => {
+
+ 		request.get({ uri: "https://www.nicehash.com/api?method=stats.provider.ex&addr="+addr+"", json: true }, (err, res, body)=> {
+
+ 			if(!err && body && body.result && body.result.current && body.result.current.length) {
+
+				body.result.current.forEach((r) => {
+					let record = r;
+					let algo = r.name;
+
+					var printRates = (val) => {
+						var st = "";
+			        		rates.forEach((rate) => {
+                                                        st += (val * rate.rate).toFixed(2)+" " + rate.name + "\t"
+                                                });
+						return st;
+					};
+					if(Number(r.data[1])) { // balance available
+						console.log("=== "+algo+" ===\n");
+					//	console.log(r.profitability + " BTC/day\t" + printRates(r.profitability));
+
+						let totalBTC = Number(r.data[1]);
+						let exchanges = totalBTC + " BTC balance\t";
+						exchanges += printRates(totalBTC);
+/*						rates.forEach((rate) => {
+							exchanges += (totalBTC * rate.rate).toFixed(2)+" " + rate.name + "\t"
+						});*/
+						console.log(exchanges+"\n");
+					}
+				});
 			}
 			done();
-			});
+		});
+	});
 };
 
 var addr = "1J6GWiBvj6CdDSQoQETymDkJonZcrFGJrh";
 var excrate = 0.0014;
+var equihash_algo=24;
 
 totalStats(addr, excrate, () => {
-		workerStats(addr,() => 
+		workerStats(addr, 24, () => 
 				{
 				});
 		});

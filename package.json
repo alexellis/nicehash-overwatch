@@ -19,6 +19,7 @@
   "homepage": "https://github.com/alexellis/nicehash-overwatch#readme",
   "dependencies": {
     "humanize-duration": "^3.9.1",
+    "jsonic": "^0.2.2",
     "request": "^2.78.0"
   }
 }
