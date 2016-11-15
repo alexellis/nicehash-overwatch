@@ -1,11 +1,11 @@
 'use strict'
 
 let request = require('request');
-let rate = require("./rate");
+let rateFetch  = require("./rate");
 
 let totalStats = (addr, done) => {
 
-  rate(addr, (err, rates) => {
+  rateFetch.getExchangeRates(addr, (err, rates) => {
     
     let options = {
       uri: "https://www.nicehash.com/api?method=stats.provider.ex&addr=" + addr + "",

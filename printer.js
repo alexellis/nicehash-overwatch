@@ -5,7 +5,7 @@ let durations = require('humanize-duration');
 let add = (w) => {
   let acc = 0;
   if (parseInt(w[1].a)) {
-    acc += parseInt(w[1].a);
+    acc += Number(w[1].a);
   }
   return acc;
 };
@@ -34,22 +34,24 @@ let printStats = (overallStats, workerStats) => {
     }
   });
 
-  console.log(workerStats.workers.length + " workers enrolled.");
+    if(workerStats.workers.length) {
+      console.log(workerStats.workers.length + " workers enrolled.");
 
-  let val = "";
-  let compute = 0;
-  let print = "";
-  workerStats.workers.forEach((w)=> {
-      val += add(w);
-      print += tally(w);
-      compute += computeTime(w);
-    });
+      let totalSols = 0;
+      let compute = 0;
+       let print = "";
+      workerStats.workers.forEach((w)=> {
+          totalSols += add(w);
+          print += tally(w);
+          compute += computeTime(w);
+        });
 
-    console.log(val + " Sols/s.");
-    console.log(durations(compute * 60 * 1000, {    units: ['d', 'h', 'm']}) + " compute time.");
+        console.log(totalSols.toFixed(2) + " Sols/s.");
+        console.log(durations(compute * 60 * 1000, {    units: ['d', 'h', 'm']}) + " compute time.");
 
-    console.log("\nNode\tSols/s\tRun time");
-    console.log(print);
+        console.log("\nNode\tSols/s\tRun time");
+        console.log(print);
+   }
 };
 
 module.exports = {
