@@ -25,7 +25,7 @@ let algo = 24;
 app.get("/metrics", (req, res) => {
     console.log(".");
     let start = new Date().getTime();
-    totalStats(algo, addr, (results) => {
+    totalStats(addr, algo, (results) => {
         workerStats(addr, algo, (workerResults) => {
             try {
                 totalSols.set(workerResults.totalSols);
